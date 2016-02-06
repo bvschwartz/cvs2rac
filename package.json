@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "csvtojson": "~0.5.2",
-    "lodash": "~4.2.1"
+    "lodash": "~4.2.1",
+    "mkdirp": "~0.5.1"
   }
 }
