@@ -1,14 +1,32 @@
-# Converts a Concept2 CRASH-B heat sheet and generates .rac files
+Converts a Concept2 CRASH-B heat sheet and generates .rac files
+===============================================================
 
-## Built in requirements:
-* 40 ERGs total in 4 groups of 10
-* The 500 meter event is named "FamRow"
-* The 1000 meter event names end in "-1k"
-* The heats and lanes have already been set up
-* Column names are: Ev#,Event,Team,First_Name,Last_Name,Age,Sex,Lwt,2k Time,Heat,Time,Lane,Crash-B
-* Unused lanes are labeled "LANE n"
+This program does not set up lane assignments. You need to set up
+all the heats and lanes in a spreadsheet. This program will then
+generate all the .rac files needed to run the race
 
-## .rac file format
+Install and Run
+---------------
+
+    npm install
+    node csv2rac
+
+Notes
+-----
+* Heat sheet is in CSV format
+* Required column names: `Event`, `First_Name`, `Last_Name`, `Heat`, `Lane`
+* Heat sheet named `HeatSheet.csv`
+* 10 ergs/lanes per heat numbered 1-10
+* The 500 meter event is named `FamRow`
+* The 1000 meter event names end in `-1k`
+* All other events are 2000m
+* Unused lanes will labeled `LANE n`
+* Results put in `Races` directory
+
+.rac file format
+================
+
+DOS-style \r\n line terminators
 
 ### Header
     LINE 0: RACE
@@ -32,3 +50,4 @@
 
 ### Footer
     LINE: 0
+

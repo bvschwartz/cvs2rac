@@ -13,14 +13,13 @@ var Converter = require("csvtojson").Converter
 var converter = new Converter({})
 
 // GLOBALS
-var csvData = fs.readFileSync("PIRC2016_HeatSheet.csv", "UTF8")
+var csvData = fs.readFileSync("HeatSheet.csv", "UTF8")
 
 converter.fromString(csvData, function(err,result) {
     // get rid of empty lines, keep lines with an "Event"
     result = _.filter(result, "Event")
     // give each line an "event name"
     result.forEach(function(line) {
-        line.eventName = line['Ev#'] + "-" + line.Event
         line.heatName = "Heat" + line.Heat
         if (line.Event.match(/FamRow/))
             line.distance = 500
@@ -115,11 +114,11 @@ function createRace(race) {
     raceLines.push("0")
 
     function pushRace(name, lane) {
-        raceLines.push(name)
-        raceLines.push("0")
-        raceLines.push("")
-        raceLines.push("")
-        raceLines.push("")
+        raceLines.push(name)    // name
+        raceLines.push("0")     // 0
+        raceLines.push("")      // blank
+        raceLines.push("USA")   // country
+        raceLines.push("")      // birthdate MMDDYYYY
         console.log("  %s created lane %s: %s", raceName, lane, name)
     }
 
