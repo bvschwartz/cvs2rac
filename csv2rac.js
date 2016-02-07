@@ -3,6 +3,7 @@
 
 // CONFIG
 var outputDir = "Races"
+var saveStrokes = false
 
 // IMPORTS
 var fs = require("fs")
@@ -79,21 +80,23 @@ function createRace(race) {
         "RACE",
         "108",
         "0",
-        "<race name>",
-        "<race distance>",
+        "XXX",  // race name
+        "XXX",  // race distance in meters (or time in seconds)
+        "0",    // 0 = meters, 1 = seconds
         "0",
-        "0",
-        "1",
-        "500",
-        "120",
-        "10",
+        "XXX",  // 1=save stroke data
+        "500",  // split interval in meters
+        "120",  // split interval in seconds
+        "10",   // number of ergs
     ]
     raceLines[3] = raceName
     raceLines[4] = race[0].distance
+    raceLines[7] = saveStrokes ? "1" : "0"
     var i = firstLane
     _.forOwn(race, function(line) {
         var lane = line.Lane
         var name
+        // add any "missing" lanes
         for (var x = i; x < lane; x++) {
             name = "Lane " + x
             pushRace(name, x)
@@ -102,12 +105,14 @@ function createRace(race) {
         pushRace(name, lane)
         i = lane + 1
     })
-    raceLines.push("0")
     //console.log(raceLines)
-    for (var x = i; x < lastLane; x++) {
+    // add regular lane
+    for (var x = i; x <= lastLane; x++) {
         var name = "Lane " + x
         pushRace(name, x)
     }
+    // the trailing 0
+    raceLines.push("0")
 
     function pushRace(name, lane) {
         raceLines.push(name)

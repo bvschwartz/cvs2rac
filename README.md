@@ -21,7 +21,7 @@
     LINE 7: 1 <1=save stroke data>
     LINE 8: <split interval, e.g. "500">
     LINE 9: <split time, e.g. "120">
-    LINE 10: <number of racers, e.g. "10">
+    LINE 10: <number of ergs, e.g. "10">
 
 ### For each lane
     LINE 0: <name>
