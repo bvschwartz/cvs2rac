@@ -13,7 +13,7 @@ var Converter = require("csvtojson").Converter
 var converter = new Converter({})
 
 // GLOBALS
-var csvData = fs.readFileSync("HeatSheet.csv", "UTF8")
+var csvData = fs.readFileSync("HeatSheet.csv", "utf8")
 
 converter.fromString(csvData, function(err,result) {
     // get rid of empty lines, keep lines with an "Event"
@@ -134,7 +134,7 @@ function writeRaceFile(raceLines) {
     mkdirp.sync(dirPath)
     var path = dirPath + "/" + raceName + ".rac"
     console.log("writing %s", path)
-    fs.writeFileSync(path, raceLines.join("\r\n"))
+    fs.writeFileSync(path, raceLines.join("\r\n"), "utf8")
 }
 
 function error(msg) {

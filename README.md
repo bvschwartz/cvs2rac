@@ -1,9 +1,19 @@
 Converts a Concept2 CRASH-B heat sheet and generates .rac files
 ===============================================================
 
+We used this program with the  spreadsheet generated from regatta
+central to build out all the .rac files needed for the PIRC on
+2/9/2016.
+
+The .rac files can be opened directly into the Concept2 Venue Race
+Application.
+
 This program does not set up lane assignments. You need to set up
 all the heats and lanes in a spreadsheet. This program will then
 generate all the .rac files needed to run the race
+
+You'll need a Unix box (Mac or Linux) running Node to use it.
+Ask your friendly neighborhood techie.
 
 Install and Run
 ---------------
