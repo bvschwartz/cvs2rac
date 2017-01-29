@@ -4,6 +4,7 @@
 // CONFIG
 var outputDir = "Races"
 var saveStrokes = false
+var sameDir = true
 
 // IMPORTS
 var fs = require("fs")
@@ -18,12 +19,15 @@ var csvData = fs.readFileSync("HeatSheet.csv", "utf8")
 converter.fromString(csvData, function(err,result) {
     // get rid of empty lines, keep lines with an "Event"
     result = _.filter(result, "Event")
+    //console.log(JSON.stringify(result, null, 4))
     // give each line an "event name"
     result.forEach(function(line) {
         line.heatName = "Heat" + line.Heat
         if (line.Event.match(/FamRow/))
             line.distance = 500
-        else if (line.Event.match(/1k$/))
+        else if (line.Event.match(/\b500m\b/))
+            line.distance = 500
+        else if (line.Event.match(/\b1k\b/))
             line.distance = 1000
         else 
             line.distance = 2000
@@ -63,7 +67,10 @@ function lanesNameFromLine(line) {
     if (line.Lane <= 20) return "11-20"
     if (line.Lane <= 30) return "21-30"
     if (line.Lane <= 40) return "31-40"
-    error("bad line: " + JSON.stringify(line))
+    console.log("bad line: lane=" + line.Lane + " " + JSON.stringify(line))
+    if (line.Lane > 40) {
+        return "31-40"
+    }
 }
 
 // generate the lines of an RAC file
@@ -74,7 +81,7 @@ function createRace(race) {
     var m = lanesName.match(/(.*)-(.*)/)
     var firstLane = parseInt(m[1], 10)
     var lastLane = parseInt(m[2], 10)
-    console.log("creating race: " + raceName)
+    console.log("creating race: " + raceName + ", distance=" + race[0].distance)
     var raceLines = [
         "RACE",
         "108",
@@ -92,6 +99,9 @@ function createRace(race) {
     raceLines[4] = race[0].distance
     raceLines[7] = saveStrokes ? "1" : "0"
     var i = firstLane
+    if (race.length > 10) {
+        console.log("too many rowers: " + race.length)
+    }
     _.forOwn(race, function(line) {
         var lane = line.Lane
         var name
@@ -100,7 +110,7 @@ function createRace(race) {
             name = "Lane " + x
             pushRace(name, x)
         }
-        name = line.Last_Name + "," + line.First_Name
+        name = line["Rower Name"] || (line.Last_Name + "," + line.First_Name)
         pushRace(name, lane)
         i = lane + 1
     })
@@ -130,7 +140,10 @@ function writeRaceFile(raceLines) {
     var raceName = raceLines[3]     // e.g. Heat12_11-20.rac
     console.log(raceName)
     var lanesName = raceName.match(/_(.*)$/)[1]
-    var dirPath = outputDir + "/" + lanesName
+    var dirPath = outputDir
+    if (!sameDir) {
+        dirPath += "/" + lanesName
+    }
     mkdirp.sync(dirPath)
     var path = dirPath + "/" + raceName + ".rac"
     console.log("writing %s", path)
