@@ -15,19 +15,26 @@ var converter = new Converter({})
 
 // GLOBALS
 var csvData = fs.readFileSync("HeatSheet.csv", "utf8")
+var errors = []
 
 converter.fromString(csvData, function(err,result) {
     // get rid of empty lines, keep lines with an "Event"
+    var eventNames = []
     result = _.filter(result, "Event")
     //console.log(JSON.stringify(result, null, 4))
     // give each line an "event name"
     result.forEach(function(line) {
         line.heatName = "Heat" + line.Heat
-        if (line.Event.match(/FamRow/))
+        if (!eventNames.includes(line.Event)) eventNames.push(line.Event)
+        if (line.Event.match(/\bFamRow/))
+            line.distance = 500
+        else if (line.Event.match(/\bFamily/))
+            line.distance = 500
+        else if (line.Event.match(/\bCox/))
             line.distance = 500
         else if (line.Event.match(/\b500m\b/))
             line.distance = 500
-        else if (line.Event.match(/\b1k\b/))
+        else if (line.Event.match(/\b1[kK]\b/))
             line.distance = 1000
         else 
             line.distance = 2000
@@ -60,6 +67,11 @@ converter.fromString(csvData, function(err,result) {
             writeRaceFile(raceLines)
         })
     })
+
+    console.log("Events:" + JSON.stringify(eventNames, null, 4))
+    if (errors.length > 0) {
+        console.log("Errors:\n" + JSON.stringify(errors, null, 4))
+    }
 })
 
 function lanesNameFromLine(line) {
@@ -67,7 +79,7 @@ function lanesNameFromLine(line) {
     if (line.Lane <= 20) return "11-20"
     if (line.Lane <= 30) return "21-30"
     if (line.Lane <= 40) return "31-40"
-    console.log("bad line: lane=" + line.Lane + " " + JSON.stringify(line))
+    logError("bad line: lane=" + line.Lane + " " + JSON.stringify(line))
     if (line.Lane > 40) {
         return "31-40"
     }
@@ -100,7 +112,7 @@ function createRace(race) {
     raceLines[7] = saveStrokes ? "1" : "0"
     var i = firstLane
     if (race.length > 10) {
-        console.log("too many rowers: " + race.length)
+        logError("too many rowers: " + race.length + ", in " + raceName)
     }
     _.forOwn(race, function(line) {
         var lane = line.Lane
@@ -152,6 +164,11 @@ function writeRaceFile(raceLines) {
 
 function error(msg) {
     throw new Error(msg)
+}
+
+function logError(msg) {
+    console.log(msg)
+    errors.push(msg)
 }
 
 function dumpEvents(events) {
